@@ -7,6 +7,7 @@ import openai
 
 
 
+
 ls_text = {}
 ls_img = {}
 reg_par = r'-\S+\s'
