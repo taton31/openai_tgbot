@@ -8,8 +8,8 @@ import openai
 
 
 
-ls_text = {'h':'j'}
-ls_img = {'h':'j'}
+ls_text = {}
+ls_img = {}
 reg_par = r'-\S+\s'
 reg_com = r'/\S+\s'
 
