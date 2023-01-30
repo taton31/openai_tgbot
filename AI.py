@@ -8,8 +8,8 @@ import openai
 
 
 
-ls_text = {}
-ls_img = {}
+ls_text = {'h':'j'}
+ls_img = {'h':'j'}
 reg_par = r'-\S+\s'
 reg_com = r'/\S+\s'
 
@@ -23,10 +23,8 @@ openai.api_key = "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"
 @bot.message_handler(commands=['stat'], func=lambda message: message.chat.type == 'private')
 def send_stat(message):
     ID = message.id
-    ls_text_str = '; '.join([f'{key.capitalize()}: {value}' for key, value in ls_text[0].items()])
-    ls_img_str = '; '.join([f'{key.capitalize()}: {value}' for key, value in ls_img[0].items()])
-    bot.send_message(message.chat.id,f'Text requests:\n{ls_text_str}', reply_to_message_id=ID)
-    bot.send_message(message.chat.id,f'Img requests:\n{ls_img_str}', reply_to_message_id=ID)
+    bot.send_message(message.chat.id,f'Text requests:\n{ls_text}', reply_to_message_id=ID)
+    bot.send_message(message.chat.id,f'Img requests:\n{ls_img}', reply_to_message_id=ID)
 
 @bot.message_handler(commands=['img'])
 def get_codex(message):
