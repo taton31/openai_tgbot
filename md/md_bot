@@ -1,0 +1,54 @@
+import os
+import requests
+import telebot
+from dotenv import load_dotenv
+
+load_dotenv('md\md.env')
+
+DISCORD_BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+DISCORD_CHANNEL_ID = os.environ.get("DISCORD_CHANNEL_ID")
+
+bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
+
+sent_messages = []
+
+def get_discord_messages():
+    headers = {
+        "Authorization": f"Bot {DISCORD_BOT_TOKEN}",
+        "User-Agent": "MyBot/0.0.1",
+    }
+    url = f"https://discordapp.com/api/v6/channels/{DISCORD_CHANNEL_ID}/messages?limit=100"
+    response = requests.get(url, headers=headers)
+    return response.json()
+
+def send_message_to_telegram(message):
+    if "attachments" in message:
+        for attachment in message["attachments"]:
+            file_url = attachment["url"]
+            file = requests.get(file_url)
+            bot.send_photo(TELEGRAM_CHAT_ID, file)
+    elif "embeds" in message:
+        embed = message["embeds"][0]
+        if "image" in embed:
+            image_url = embed["image"]["url"]
+            image = requests.get(image_url)
+            bot.send_photo(TELEGRAM_CHAT_ID, image)
+        if "fields" in embed:
+            text = ""
+            for field in embed["fields"]:
+                text += f"{field['name']}: {field['value']}\n"
+            bot.send_message(TELEGRAM_CHAT_ID, text)
+    else:
+        bot.send_message(TELEGRAM_CHAT_ID, message["content"])
+
+def translate_and_send_message(discord_message):
+    send_message_to_telegram(discord_message)
+
+if name == "main":
+    discord_messages = get_discord_messages()
+    for message in discord_messages:
+        if message["id"] not in sent_messages:
+            translate_and_send_message(message)
+            sent_messages.append(message["id"])
