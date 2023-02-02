@@ -14,8 +14,7 @@ reg_par = r'-\S+\s'
 reg_com = r'/\S+\s'
 
 bot = telebot.TeleBot("2001307240:AAE9UoP6z7m5oYujHoOWWx47Y9Vt_Mm-hrI")
-#openai.api_key = "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"
-openai.api_key = "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"
+openai.api_key = "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"
 
 
 # 5149682661:AAFYq2BpHTSfIYrU2wjKfUT8zn4aDe_1FIU mstr bot
