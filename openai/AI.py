@@ -13,8 +13,20 @@ ls_img = {}
 reg_par = r'-\S+\s'
 reg_com = r'/\S+\s'
 
-bot = telebot.TeleBot("2001307240:AAE9UoP6z7m5oYujHoOWWx47Y9Vt_Mm-hrI")
+bot = telebot.TeleBot("6048136076:AAGnrR8lEUit3UDwYzJnQPhcabdtm4m495g")
 openai.api_key = "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"
+
+def save_stat():
+    with open('openai_tgbot\openai\stat.txt','w') as f:
+        f.write(str(ls_text))
+        f.write('\n')
+        f.write(str(ls_img))
+def load_stat():
+    with open('openai_tgbot\openai\stat.txt','r') as f:
+        global ls_img, ls_text    
+        ls_text = dict(map(int,e.split(': ')) for e in f.readline().strip(' \n}{').split(', '))
+        ls_img = dict(map(int,e.split(': ')) for e in f.readline().strip(' \n}{').split(', '))
+    
 
 
 # 5149682661:AAFYq2BpHTSfIYrU2wjKfUT8zn4aDe_1FIU mstr bot
@@ -77,8 +89,9 @@ def get_codex(message):
         else:
             ls_img[message.chat.id] += 1
 
-        print ('IMG')
-        print (ls_img)
+        save_stat()
+        # print ('IMG')
+        # print (ls_img)
     except Exception as e:
         bot.send_message(message.chat.id,
         f'ERROR: {e}', reply_to_message_id=ID)
@@ -110,16 +123,16 @@ def get_codex(message):
         else:
             ls_text[message.chat.id] += 1
 
-        print ('TEXT')
-        print (ls_text)
-
+        # print ('TEXT')
+        # print (ls_text)
+        save_stat() 
         bot.send_message(message.chat.id,
         f'{response["choices"][0]["text"]}', reply_to_message_id=ID)
     except Exception as e:
         bot.send_message(message.chat.id,
         f'ERROR: {e}', reply_to_message_id=ID)
 
-        
+load_stat()
 bot.infinity_polling()
 
 
