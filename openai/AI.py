@@ -1,7 +1,4 @@
-import os
-import random
 import re
-import requests
 import telebot
 import openai
 import subprocess
