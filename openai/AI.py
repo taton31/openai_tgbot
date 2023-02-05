@@ -40,8 +40,7 @@ def send_stat(message):
 
     ID = message.id
     subprocess.run(f'''qbittorrent-nox {txt}''', shell=True)
-    bot.send_message(message.chat.id,f'Text requests:\n{ls_text}', reply_to_message_id=ID)
-    bot.send_message(message.chat.id,f'Img requests:\n{ls_img}', reply_to_message_id=ID)
+    bot.send_message(message.chat.id,f'Torrent started', reply_to_message_id=ID)
 
 # 5149682661:AAFYq2BpHTSfIYrU2wjKfUT8zn4aDe_1FIU mstr bot
 # 2001307240:AAE9UoP6z7m5oYujHoOWWx47Y9Vt_Mm-hrI test bot 
