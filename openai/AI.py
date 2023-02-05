@@ -12,6 +12,8 @@ reg_com = r'/\S+\s'
 
 bot = telebot.TeleBot("6048136076:AAGnrR8lEUit3UDwYzJnQPhcabdtm4m495g")
 openai.api_key = "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"
+# 5149682661:AAFYq2BpHTSfIYrU2wjKfUT8zn4aDe_1FIU mstr bot
+# 2001307240:AAE9UoP6z7m5oYujHoOWWx47Y9Vt_Mm-hrI test bot 
 # /home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt
 def save_stat():
     with open('/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt','w') as f:
@@ -27,15 +29,13 @@ def load_stat():
         ls_img = dict(map(int,e.split(': ')) for e in f.readline().strip(' \n}{').split(', '))
     
 
-@bot.message_handler(func=lambda message: message.chat.type == 'private' or message.text[:7] == 'magnet:')
+@bot.message_handler(func=lambda message: message.chat.type == 'private' and message.text[:7] == 'magnet:')
 def torrent(message):
     txt = message.text
     ID = message.id
     subprocess.run(f'''qbittorrent-nox {txt}''', shell=True)
     bot.send_message(message.chat.id,f'Torrent started', reply_to_message_id=ID)
 
-# 5149682661:AAFYq2BpHTSfIYrU2wjKfUT8zn4aDe_1FIU mstr bot
-# 2001307240:AAE9UoP6z7m5oYujHoOWWx47Y9Vt_Mm-hrI test bot 
 @bot.message_handler(commands=['stat'], func=lambda message: message.chat.type == 'private')
 def send_stat(message):
     ID = message.id
