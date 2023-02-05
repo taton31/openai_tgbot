@@ -29,6 +29,18 @@ def load_stat():
         ls_img = dict(map(int,e.split(': ')) for e in f.readline().strip(' \n}{').split(', '))
     
 
+@bot.message_handler(commands=['torstop'], func=lambda message: message.chat.type == 'private')
+def send_stat(message):
+    ID = message.id
+    subprocess.run(f'''pkill qbittorrent-nox''', shell=True)
+    bot.send_message(message.chat.id,f'qbittorrent-nox stoped', reply_to_message_id=ID)
+
+@bot.message_handler(commands=['torstart'], func=lambda message: message.chat.type == 'private')
+def send_stat(message):
+    ID = message.id
+    subprocess.run(f'''qbittorrent-nox''', shell=True)
+    bot.send_message(message.chat.id,f'qbittorrent-nox started', reply_to_message_id=ID)
+
 @bot.message_handler(func=lambda message: message.chat.type == 'private' and message.text[:7] == 'magnet:')
 def torrent(message):
     txt = message.text
