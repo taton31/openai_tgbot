@@ -11,4 +11,4 @@ bot.send_message('1723464345','asdf')
 
 if __name__ == "__main__":
     for param in sys.argv:
-        print (param)
+        print (param[-1])
