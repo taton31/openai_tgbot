@@ -27,14 +27,9 @@ def load_stat():
         ls_img = dict(map(int,e.split(': ')) for e in f.readline().strip(' \n}{').split(', '))
     
 
-@bot.message_handler(commands=['torrent'], func=lambda message: message.chat.type == 'private')
-def send_stat(message):
+@bot.message_handler(func=lambda message: message.chat.type == 'private' or message.text[:7] == 'magnet:')
+def torrent(message):
     txt = message.text
-    re_search = re.search(reg_com, txt)
-    while re_search:
-        txt = txt[re_search.regs[0][1]:]
-        re_search = re.search(reg_com, txt)
-
     ID = message.id
     subprocess.run(f'''qbittorrent-nox {txt}''', shell=True)
     bot.send_message(message.chat.id,f'Torrent started', reply_to_message_id=ID)
