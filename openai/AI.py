@@ -17,12 +17,14 @@ bot = telebot.TeleBot("6048136076:AAGnrR8lEUit3UDwYzJnQPhcabdtm4m495g")
 openai.api_key = "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"
 # /home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt
 def save_stat():
-    with open('openai_tgbot\openai\stat.txt','w') as f:
+    with open('/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt','w') as f:
+    # with open('openai_tgbot\openai\stat.txt','w') as f:
         f.write(str(ls_text))
         f.write('\n')
         f.write(str(ls_img))
 def load_stat():
-    with open('openai_tgbot\openai\stat.txt','r') as f:
+    with open('/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt','r') as f:
+    # with open('openai_tgbot\openai\stat.txt','r') as f:
         global ls_img, ls_text    
         ls_text = dict(map(int,e.split(': ')) for e in f.readline().strip(' \n}{').split(', '))
         ls_img = dict(map(int,e.split(': ')) for e in f.readline().strip(' \n}{').split(', '))
