@@ -32,14 +32,14 @@ def load_stat():
 @bot.message_handler(commands=['torstop'], func=lambda message: message.chat.type == 'private')
 def send_stat(message):
     ID = message.id
-    subprocess.run(f'''pkill qbittorrent-nox >> /dev/null''',shell=True, capture_output = True)
     bot.send_message(message.chat.id,f'qbittorrent-nox stoped', reply_to_message_id=ID)
+    subprocess.run(f'''pkill qbittorrent-nox >> /dev/null''',shell=True, capture_output = True)
 
 @bot.message_handler(commands=['torstart'], func=lambda message: message.chat.type == 'private')
 def send_stat(message):
     ID = message.id
-    subprocess.run(f'''qbittorrent-nox''',capture_output = True)
     bot.send_message(message.chat.id,f'qbittorrent-nox started', reply_to_message_id=ID)
+    subprocess.run(f'''qbittorrent-nox''',capture_output = True)
 
 @bot.message_handler(func=lambda message: message.chat.type == 'private' and message.text[:7] == 'magnet:')
 def torrent(message):
