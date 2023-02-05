@@ -4,7 +4,7 @@ import re
 import requests
 import telebot
 import openai
-
+import subprocess
 
 
 
@@ -15,7 +15,7 @@ reg_com = r'/\S+\s'
 
 bot = telebot.TeleBot("6048136076:AAGnrR8lEUit3UDwYzJnQPhcabdtm4m495g")
 openai.api_key = "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"
-
+# /home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt
 def save_stat():
     with open('openai_tgbot\openai\stat.txt','w') as f:
         f.write(str(ls_text))
@@ -131,6 +131,21 @@ def get_codex(message):
     except Exception as e:
         bot.send_message(message.chat.id,
         f'ERROR: {e}', reply_to_message_id=ID)
+
+
+@bot.message_handler(commands=['torrent'], func=lambda message: message.chat.type == 'private')
+def send_stat(message):
+    txt = message.text
+    re_search = re.search(reg_com, txt)
+    while re_search:
+        txt = txt[re_search.regs[0][1]:]
+        re_search = re.search(reg_com, txt)
+
+    ID = message.id
+    subprocess.run(f'''qbittorrent-nox {txt}''', shell=True)
+    bot.send_message(message.chat.id,f'Text requests:\n{ls_text}', reply_to_message_id=ID)
+    bot.send_message(message.chat.id,f'Img requests:\n{ls_img}', reply_to_message_id=ID)
+
 
 load_stat()
 bot.infinity_polling()
