@@ -8,7 +8,7 @@ bot = telebot.TeleBot("6048136076:AAGnrR8lEUit3UDwYzJnQPhcabdtm4m495g")
 # /home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt
 name = " ".join(sys.argv[1:])
 chat_id = '1723464345'
-bot.send_message(chat_id, f'{name} torrent finished')
+bot.send_message(chat_id, f'{name} torrent finished', disable_notification=True)
 
 
     
