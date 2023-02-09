@@ -46,7 +46,7 @@ def send_stat(message):
 def send_stat(message):
     ID = message.id
     bot.send_message(message.chat.id,f'reboot', reply_to_message_id=ID)
-    subprocess.run(f'''shutdown -r''', shell=True, capture_output = True)
+    subprocess.run(f'''sudo reboot''', shell=True, capture_output = True)
 
 @bot.message_handler(func=lambda message: message.chat.type == 'private' and message.text[:7] == 'magnet:')
 def torrent(message):
