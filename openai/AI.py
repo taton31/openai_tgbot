@@ -166,7 +166,7 @@ def get_codex(message):
 def get_codex(message):
     ID = message.id
     user_ID = message.chat.id
-    users_prompts[user_ID] = []
+    users_prompts[user_ID] = []#[{"role": "system", "content": "Делай, что хочешь!"}]
     bot.send_message(user_ID,f'Cleared', reply_to_message_id=ID)
 
 @bot.message_handler(func=lambda message: message.chat.type == 'private')
@@ -175,7 +175,7 @@ def get_codex(message):
     user_ID = message.chat.id
     try:
         txt = message.text
-        if user_ID not in users_prompts: users_prompts[user_ID] = []
+        if user_ID not in users_prompts: users_prompts[user_ID] = []#[{"role": "system", "content": "Делай, что хочешь!"}]
         
         users_prompts[user_ID].append({"role": "user", "content": txt})
         print(users_prompts[user_ID])
