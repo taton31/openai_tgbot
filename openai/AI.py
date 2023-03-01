@@ -1,4 +1,5 @@
 import re
+import sys
 import telebot
 import openai
 import subprocess
@@ -10,24 +11,30 @@ ls_img = {}
 reg_par = r'-\S+\s'
 reg_com = r'/\S+\s'
 
+users_prompts = {}
+
+f_stat = 'openai_tgbot\openai\stat.txt' if sys.platform.startswith('win') else '/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt'
+
 bot = telebot.TeleBot("6048136076:AAGnrR8lEUit3UDwYzJnQPhcabdtm4m495g")
 openai.api_key = "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"
 # 5149682661:AAFYq2BpHTSfIYrU2wjKfUT8zn4aDe_1FIU mstr bot
 # 2001307240:AAE9UoP6z7m5oYujHoOWWx47Y9Vt_Mm-hrI test bot 
 # /home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt
 def save_stat():
-    with open('/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt','w') as f:
+    # with open('/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt','w') as f:
     # with open('openai_tgbot\openai\stat.txt','w') as f:
+    with open(f_stat, 'w') as f:
         f.write(str(ls_text))
         f.write('\n')
         f.write(str(ls_img))
 def load_stat():
-    with open('/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt','r') as f:
+    # with open('/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt','r') as f:
     # with open('openai_tgbot\openai\stat.txt','r') as f:
+    with open(f_stat, 'r') as f:
         global ls_img, ls_text    
         ls_text = dict(map(int,e.split(': ')) for e in f.readline().strip(' \n}{').split(', '))
         ls_img = dict(map(int,e.split(': ')) for e in f.readline().strip(' \n}{').split(', '))
-    
+
 
 @bot.message_handler(commands=['torstop'], func=lambda message: message.chat.type == 'private')
 def send_stat(message):
@@ -52,8 +59,8 @@ def send_stat(message):
 def torrent(message):
     txt = message.text
     ID = message.id
-    # subprocess.run(f'''qbittorrent-nox''', capture_output = True)
-    subprocess.run(f'''qbittorrent-nox {txt}''', shell=True)
+    subprocess.run(f'''qbittorrent-nox; qbittorrent-nox {txt}''', capture_output = True)
+    # subprocess.run(f'''qbittorrent-nox {txt}''', shell=True)
     bot.send_message(message.chat.id,f'Torrent started', reply_to_message_id=ID)
 
 @bot.message_handler(commands=['stat'], func=lambda message: message.chat.type == 'private')
@@ -122,7 +129,7 @@ def get_codex(message):
         f'ERROR: {e}', reply_to_message_id=ID)
 
 
-@bot.message_handler(func=lambda message: message.chat.type == 'private' or message.text[:3] == '/t ')
+@bot.message_handler(func=lambda message: message.text[:3] == '/t ')
 def get_codex(message):
     ID = message.id
     try:
@@ -148,14 +155,50 @@ def get_codex(message):
         else:
             ls_text[message.chat.id] += 1
 
-        # print ('TEXT')
-        # print (ls_text)
         save_stat() 
         bot.send_message(message.chat.id,
         f'{response["choices"][0]["text"]}', reply_to_message_id=ID)
     except Exception as e:
         bot.send_message(message.chat.id,
         f'ERROR: {e}', reply_to_message_id=ID)
+
+@bot.message_handler(commands=['clear_prompts'])
+def get_codex(message):
+    ID = message.id
+    user_ID = message.chat.id
+    users_prompts[user_ID] = []
+    bot.send_message(user_ID,f'Cleared', reply_to_message_id=ID)
+
+@bot.message_handler(func=lambda message: message.chat.type == 'private')
+def get_codex(message):
+    ID = message.id
+    user_ID = message.chat.id
+    try:
+        txt = message.text
+        if user_ID not in users_prompts: users_prompts[user_ID] = []
+        
+        users_prompts[user_ID].append({"role": "user", "content": txt})
+        print(users_prompts[user_ID])
+        
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=users_prompts[user_ID]
+            )
+        if user_ID not in ls_text:
+            ls_text[user_ID] = 1
+        else:
+            ls_text[user_ID] += 1
+        save_stat() 
+
+        response['choices'][0]['message']['content']
+        users_prompts[user_ID].append({"role": "assistant", "content": response['choices'][0]['message']['content']})
+
+        print(users_prompts)
+
+        bot.send_message(user_ID,
+        response['choices'][0]['message']['content'], reply_to_message_id=ID)
+    except Exception as e:
+        bot.send_message(user_ID, f'ERROR: {e}', reply_to_message_id=ID)
 
 
 
