@@ -59,7 +59,7 @@ def send_stat(message):
 def torrent(message):
     txt = message.text
     ID = message.id
-    subprocess.run(f'''qbittorrent-nox; qbittorrent-nox {txt}''', capture_output = True)
+    subprocess.run(f'''qbittorrent-nox {txt}''', capture_output = True)
     # subprocess.run(f'''qbittorrent-nox {txt}''', shell=True)
     bot.send_message(message.chat.id,f'Torrent started', reply_to_message_id=ID)
 
