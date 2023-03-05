@@ -223,7 +223,7 @@ def gtp3_5_auto(message):
             users_prompts[-user_ID][1].append({"role": "user", "content": response['choices'][0]['message']['content']})
             i = (i + 1) % 2
             bot.send_message(user_ID, response['choices'][0]['message']['content'])
-            time.sleep(5)
+            time.sleep(10)
         
         if user_ID not in ls_text:
             ls_text[user_ID] = 1
