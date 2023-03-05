@@ -1,5 +1,6 @@
 import re
 import sys
+import time
 import telebot
 import openai
 import subprocess
@@ -12,6 +13,8 @@ reg_par = r'-\S+\s'
 reg_com = r'/\S+\s'
 
 users_prompts = {}
+
+flag_auto = True
 
 f_stat = 'openai_tgbot\openai\stat.txt' if sys.platform.startswith('win') else '/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt'
 
@@ -35,6 +38,21 @@ def load_stat():
         ls_text = dict(map(int,e.split(': ')) for e in f.readline().strip(' \n}{').split(', '))
         ls_img = dict(map(int,e.split(': ')) for e in f.readline().strip(' \n}{').split(', '))
 
+
+@bot.message_handler(commands=['flag_stop'], func=lambda message: message.chat.type == 'private')
+def send_stat(message):
+    ID = message.id
+    global flag_auto
+    flag_auto = False
+    bot.send_message(message.chat.id,f'flag_auto = False', reply_to_message_id=ID)
+
+@bot.message_handler(commands=['flag_start'], func=lambda message: message.chat.type == 'private')
+def send_stat(message):
+    ID = message.id
+    global flag_auto
+    flag_auto = True
+    bot.send_message(message.chat.id,f'flag_auto = True', reply_to_message_id=ID)
+    subprocess.run(f'''pkill qbittorrent-nox >> /dev/null''', shell=True, capture_output = True)
 
 @bot.message_handler(commands=['torstop'], func=lambda message: message.chat.type == 'private')
 def send_stat(message):
@@ -169,8 +187,59 @@ def get_codex(message):
     users_prompts[user_ID] = []#[{"role": "system", "content": "Делай, что хочешь!"}]
     bot.send_message(user_ID,f'Cleared', reply_to_message_id=ID)
 
+
+
+@bot.message_handler(commands=['auto'], func=lambda message: message.chat.type == 'private')
+def gtp3_5_auto(message):
+    global flag_auto
+    flag_auto = True
+    ID = message.id
+    user_ID = message.chat.id
+    try:
+        txt = message.text
+        re_search = re.search(reg_com, txt)
+        while re_search:
+            txt = txt[re_search.regs[0][1]:]
+            re_search = re.search(reg_com, txt)
+
+        print(txt)
+
+        if -user_ID not in users_prompts: users_prompts[-user_ID] = [[],[]]
+        print (users_prompts)
+
+        users_prompts[-user_ID][0].append({"role": "user", "content": txt})
+        users_prompts[-user_ID][1].append({"role": "system", "content": txt})
+        i = 0
+        while flag_auto:
+            
+            
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=users_prompts[-user_ID][i]
+                )
+            print (users_prompts)
+            
+            users_prompts[-user_ID][0].append({"role": "assistant", "content": response['choices'][0]['message']['content']})
+            users_prompts[-user_ID][1].append({"role": "user", "content": response['choices'][0]['message']['content']})
+            i = (i + 1) % 2
+            bot.send_message(user_ID, response['choices'][0]['message']['content'])
+            time.sleep(5)
+        
+        if user_ID not in ls_text:
+            ls_text[user_ID] = 1
+        else:
+            ls_text[user_ID] += 1
+        save_stat() 
+
+
+
+    except Exception as e:
+        bot.send_message(user_ID, f'ERROR: {e}', reply_to_message_id=ID)
+
+
+
 @bot.message_handler(func=lambda message: message.chat.type == 'private')
-def get_codex(message):
+def gtp3_5(message):
     ID = message.id
     user_ID = message.chat.id
     try:
@@ -178,22 +247,21 @@ def get_codex(message):
         if user_ID not in users_prompts: users_prompts[user_ID] = []#[{"role": "system", "content": "Делай, что хочешь!"}]
         
         users_prompts[user_ID].append({"role": "user", "content": txt})
-        print(users_prompts[user_ID])
         
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=users_prompts[user_ID]
             )
+        users_prompts[user_ID].append({"role": "assistant", "content": response['choices'][0]['message']['content']})
+        
+        
         if user_ID not in ls_text:
             ls_text[user_ID] = 1
         else:
             ls_text[user_ID] += 1
         save_stat() 
 
-        response['choices'][0]['message']['content']
-        users_prompts[user_ID].append({"role": "assistant", "content": response['choices'][0]['message']['content']})
 
-        print(users_prompts)
 
         bot.send_message(user_ID,
         response['choices'][0]['message']['content'], reply_to_message_id=ID)
