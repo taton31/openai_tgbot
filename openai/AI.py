@@ -44,15 +44,10 @@ def send_stat(message):
     ID = message.id
     global flag_auto
     flag_auto = False
+    user_ID = message.chat.id
+    users_prompts[-user_ID] = [[],[]]
     bot.send_message(message.chat.id,f'flag_auto = False', reply_to_message_id=ID)
 
-@bot.message_handler(commands=['flag_start'], func=lambda message: message.chat.type == 'private')
-def send_stat(message):
-    ID = message.id
-    global flag_auto
-    flag_auto = True
-    bot.send_message(message.chat.id,f'flag_auto = True', reply_to_message_id=ID)
-    subprocess.run(f'''pkill qbittorrent-nox >> /dev/null''', shell=True, capture_output = True)
 
 @bot.message_handler(commands=['torstop'], func=lambda message: message.chat.type == 'private')
 def send_stat(message):
