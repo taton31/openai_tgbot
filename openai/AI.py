@@ -64,11 +64,11 @@ def add_user(message):
 
     ID = message.id
     msg = '''add_user - добавить пользователя
-    remove_user - удалить пользователя
-    torstart - запустить qbittorrent
-    torstop - остановить qbittorrent
-    reboot - перезагрузить пк
-    stat - статистика'''
+remove_user - удалить пользователя
+torstart - запустить qbittorrent
+torstop - остановить qbittorrent
+reboot - перезагрузить пк
+stat - статистика'''
     bot.send_message(message.chat.id,f'{msg}', reply_to_message_id=ID)
 
 
