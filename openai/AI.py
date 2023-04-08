@@ -59,6 +59,19 @@ def go_away(message):
     bot.send_message(message.chat.id,f'Извините, у вас нет доступа к боту')
 
 
+@bot.message_handler(commands=['help'], func=lambda message: message.chat.type == 'private' and message.chat.id == 1723464345)
+def add_user(message):
+
+    ID = message.id
+    msg = '''add_user - добавить пользователя
+    remove_user - удалить пользователя
+    torstart - запустить qbittorrent
+    torstop - остановить qbittorrent
+    reboot - перезагрузить пк
+    stat - статистика'''
+    bot.send_message(message.chat.id,f'{msg}', reply_to_message_id=ID)
+
+
 
 @bot.message_handler(commands=['add_user'], func=lambda message: message.chat.type == 'private' and message.chat.id == 1723464345)
 def add_user(message):
