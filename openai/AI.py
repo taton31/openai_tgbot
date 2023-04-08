@@ -13,16 +13,32 @@ reg_par = r'-\S+\s'
 reg_com = r'/\S+\s'
 
 users_prompts = {}
+users=[]
 
 flag_auto = True
 
-f_stat = 'openai_tgbot\openai\stat.txt' if sys.platform.startswith('win') else '/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt'
+
+f_stat = 'openai\stat.txt' if sys.platform.startswith('win') else '/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt'
+f_users = 'openai/access_users.txt' if sys.platform.startswith('win') else '/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/access_users.txt'
 
 bot = telebot.TeleBot("6048136076:AAGnrR8lEUit3UDwYzJnQPhcabdtm4m495g")
 openai.api_key = "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"
 # 5149682661:AAFYq2BpHTSfIYrU2wjKfUT8zn4aDe_1FIU mstr bot
 # 2001307240:AAE9UoP6z7m5oYujHoOWWx47Y9Vt_Mm-hrI test bot 
 # /home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt
+def save_users():
+    # with open('/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt','w') as f:
+    # with open('openai_tgbot\openai\stat.txt','w') as f:
+    with open(f_users, 'w') as f:
+        f.write(str(users))
+
+def load_users():
+    # with open('/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt','r') as f:
+    # with open('openai_tgbot\openai\stat.txt','r') as f:
+    with open(f_users, 'r') as f:
+        global users   
+        users = list(map(int, f.readline().strip(' \n[]').split(', ')))
+
 def save_stat():
     # with open('/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt','w') as f:
     # with open('openai_tgbot\openai\stat.txt','w') as f:
@@ -30,13 +46,55 @@ def save_stat():
         f.write(str(ls_text))
         f.write('\n')
         f.write(str(ls_img))
+
 def load_stat():
-    # with open('/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt','r') as f:
-    # with open('openai_tgbot\openai\stat.txt','r') as f:
     with open(f_stat, 'r') as f:
         global ls_img, ls_text    
         ls_text = dict(map(int,e.split(': ')) for e in f.readline().strip(' \n}{').split(', '))
         ls_img = dict(map(int,e.split(': ')) for e in f.readline().strip(' \n}{').split(', '))
+
+
+@bot.message_handler(func=lambda message: message.chat.id not in users)
+def go_away(message):
+    bot.send_message(message.chat.id,f'Извините, у вас нет доступа к боту')
+
+
+
+@bot.message_handler(commands=['add_user'], func=lambda message: message.chat.type == 'private' and message.chat.id == 1723464345)
+def add_user(message):
+
+    ID = message.id
+    txt = message.text
+    re_search = re.search(reg_com, txt)
+    while re_search:
+        txt = txt[re_search.regs[0][1]:]
+        re_search = re.search(reg_com, txt)
+
+    users.append(int(txt))
+    save_users()
+    bot.send_message(message.chat.id,f'{txt} добавлен к пользователям', reply_to_message_id=ID)
+
+
+@bot.message_handler(commands=['remove_user'], func=lambda message: message.chat.type == 'private' and message.chat.id == 1723464345)
+def add_user(message):
+
+    ID = message.id
+    txt = message.text
+    re_search = re.search(reg_com, txt)
+    while re_search:
+        txt = txt[re_search.regs[0][1]:]
+        re_search = re.search(reg_com, txt)
+
+    txt = int(txt)
+    if txt in users:
+        users.remove(txt)
+        save_users()
+    bot.send_message(message.chat.id,f'{txt} удален', reply_to_message_id=ID)
+
+    
+
+
+
 
 
 @bot.message_handler(commands=['flag_stop'], func=lambda message: message.chat.type == 'private')
@@ -267,6 +325,7 @@ def gtp3_5(message):
 
 
 load_stat()
+load_users()
 bot.infinity_polling()
 
 
