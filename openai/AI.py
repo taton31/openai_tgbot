@@ -22,7 +22,7 @@ f_stat = 'openai\stat.txt' if sys.platform.startswith('win') else '/home/kvout/d
 f_users = 'openai/access_users.txt' if sys.platform.startswith('win') else '/home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/access_users.txt'
 
 bot = telebot.TeleBot("6048136076:AAGnrR8lEUit3UDwYzJnQPhcabdtm4m495g")
-openai.api_key = "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"
+openai.api_key = "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"
 # 5149682661:AAFYq2BpHTSfIYrU2wjKfUT8zn4aDe_1FIU mstr bot
 # 2001307240:AAE9UoP6z7m5oYujHoOWWx47Y9Vt_Mm-hrI test bot 
 # /home/kvout/desktop/telebot_chatGPT/openai_tgbot/openai/stat.txt
